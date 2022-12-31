@@ -1,5 +1,5 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { View, Button, Text,StyleSheet, ScrollView, TextInput, NativeSyntheticEvent, TextInputChangeEventData } from "react-native"
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { Animated, View, Button, Text,StyleSheet, ScrollView, TextInput, NativeSyntheticEvent, TextInputChangeEventData } from "react-native"
 import { useTodoStore } from "../store/Store";
 import { Todo } from "../types/TodoTypes";
 import 'react-native-get-random-values';
@@ -15,17 +15,25 @@ interface Inputs {
 export const CreateTodo = () => {
   const createTodo = useTodoStore((state)=>state.addTodo)
   const setCreateMode = useTodoStore((state)=>state.setCreateMode)
+  const progress = useRef(new Animated.Value(0.5)).current
+
+  useEffect(()=> {
+    Animated.timing(progress, {toValue: 1,useNativeDriver: true}).start()
+  },[])
+
   const styles = StyleSheet.create({
     container: {
       display: "flex",
-      width: "auto",
+      width: "100%",
       padding: 15,
       margin: 15,
       backgroundColor: '#fff',
       alignItems: 'center',
       justifyContent: 'center',
-      border: "1px solid grey",
-      borderRadius: 15
+			borderStyle: "solid",
+			borderColor: "grey",
+			borderWidth: 1,
+      animation: `fadeIn 1s`
     },
     input: {
       height: 40,
@@ -48,7 +56,7 @@ export const CreateTodo = () => {
 
   console.log(newTodo)
   return(
-    <View style={styles.container}>
+    <Animated.View style={styles.container}>
 
       <Text>New Todo</Text>
       <TextInput 
@@ -65,13 +73,13 @@ export const CreateTodo = () => {
       />
       
       <Button 
-        title="Submit" 
+        title="Add Task" 
         onPress={()=>{
           createTodo(newTodo)
           setCreateMode(false)
           }}
         />
-    </View> 
+    </Animated.View> 
   )
 
 }

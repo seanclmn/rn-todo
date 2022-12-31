@@ -6,6 +6,7 @@ export interface Todo {
 }
 
 export interface AppState {
+  loggedIn: boolean,
   todos: Todo[]
   createMode: boolean
   addTodo: (newTodo: Todo)=>void
