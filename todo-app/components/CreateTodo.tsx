@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Animated, View, Button, Text,StyleSheet, ScrollView, TextInput, NativeSyntheticEvent, TextInputChangeEventData } from "react-native"
 import { useTodoStore } from "../store/Store";
-import { Todo } from "../types/TodoTypes";
+import { Todo } from "../types/Types";
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid'
 

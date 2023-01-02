@@ -1,10 +1,13 @@
 import create from 'zustand'
-import { Todo,AppState } from '../types/TodoTypes'
+import { Todo,AppState } from '../types/Types'
 
 export const useTodoStore = create<AppState>((set)=> ({
   loggedIn: false,
+  user: null,
   todos: [],
   createMode: false,  
+  setLogIn: (bool)=>set(()=>({loggedIn: bool})),
+  setUser: (newUser)=>set(()=>({user: newUser})),
   addTodo: (newTodo)=>{
 		set((state)=>({todos: [...state.todos,newTodo]}))
 	},

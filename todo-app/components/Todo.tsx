@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text } from "react-native"
 import CheckBox from 'expo-checkbox'
-import { Todo as TodoModel} from "../types/TodoTypes"
+import { Todo as TodoModel} from "../types/Types"
 import { useState } from "react"
 
 export const Todo = (props: TodoModel) => {

@@ -3,22 +3,51 @@ import { useTodoStore } from './store/Store';
 
 import { Todo } from './components/Todo';
 import { CreateTodo } from './components/CreateTodo';
-import { LogIn } from './components/Creds';
+import { LogIn, SignUp } from './components/Creds';
+import { useEffect, useState } from 'react';
+import {auth, db} from './Firebase'
+import { collection, doc, getDoc } from 'firebase/firestore';
 
 const App = () => {
+  const [loading,setLoading]=useState(true)
   const storeState = useTodoStore(state=>state)
-  const open = useTodoStore((state)=>state.createMode)
-  const todos = useTodoStore((state)=>state.todos)
-  const setCreateMode = useTodoStore((state)=>state.setCreateMode)
-	console.log(todos)
 
-  // if(!storeState.loggedIn) return <LogIn/>
+  useEffect(()=>{
+
+    const user = auth.onAuthStateChanged(async (user)=>{
+      if(user) {
+        const usersRef = collection(db, "users")
+        const result = (await getDoc(doc(usersRef,user?.uid))).data()
+        if(result) {
+          storeState.setUser(
+            {
+              id: user.uid,
+              email: result.email,
+              todos: result.todos
+            }
+          )
+          storeState.setLogIn(true)
+        }
+      }
+      setLoading(false)
+
+      
+    })
+
+    return user
+
+  },[])
+
+  if(loading) return <View style={styles.appContainer}><Text>Loading...</Text></View>
+
+  if(!storeState.loggedIn) return <SignUp/>
+
   return (
     <View style={styles.appContainer}>
-      {open ? <CreateTodo/>: <Button title="create" onPress={()=>setCreateMode(true)}/>}
+      {storeState.createMode ? <CreateTodo/>: <Button title="create" onPress={()=>storeState.setCreateMode(true)}/>}
       <Text>Your Todos:</Text>
       <View style={styles.todosContainer}>
-        {todos.map((todo)=><Todo {...todo} key={todo.id}/>)}
+        {storeState.todos.map((todo)=><Todo {...todo} key={todo.id}/>)}
       </View>
     </View>
   );
