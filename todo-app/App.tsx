@@ -1,20 +1,29 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
 import { useTodoStore } from './store/Store';
 
 import { Todo } from './components/Todo';
-import { CreateTodo } from './components/CreateTodo';
+import { CreateTodo } from './components/EditTodo';
 import { LogIn, SignUp } from './components/Creds';
 import { useEffect, useState } from 'react';
 import {auth, db} from './Firebase'
 import { collection, doc, getDoc } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 
 const App = () => {
   const [loading,setLoading]=useState(true)
   const storeState = useTodoStore(state=>state)
 
-  useEffect(()=>{
+  const logOut = () => {
+    signOut(auth).then(() => {
+      // Sign-out successful.
+    }).catch((error) => {
+      // An error happened.
+});
+  }
 
+  useEffect(()=>{
     const user = auth.onAuthStateChanged(async (user)=>{
+      setLoading(true)
       if(user) {
         const usersRef = collection(db, "users")
         const result = (await getDoc(doc(usersRef,user?.uid))).data()
@@ -26,8 +35,11 @@ const App = () => {
               todos: result.todos
             }
           )
+          storeState.setTodos(result.todos)
           storeState.setLogIn(true)
         }
+      }else{
+        storeState.setLogIn(false)
       }
       setLoading(false)
 
@@ -38,12 +50,18 @@ const App = () => {
 
   },[])
 
-  if(loading) return <View style={styles.appContainer}><Text>Loading...</Text></View>
+  if(loading) return <View style={styles.appContainer}><ActivityIndicator size="large" color="#0000ff" /></View>
 
-  if(!storeState.loggedIn) return <SignUp/>
+  if(!storeState.loggedIn) return <LogIn/>
 
   return (
     <View style={styles.appContainer}>
+      <View style={styles.navBar}>
+        <Button 
+          title={"Log Out"} onPress={logOut}
+          />
+      </View>
+
       {storeState.createMode ? <CreateTodo/>: <Button title="create" onPress={()=>storeState.setCreateMode(true)}/>}
       <Text>Your Todos:</Text>
       <View style={styles.todosContainer}>
@@ -64,6 +82,12 @@ const styles = StyleSheet.create({
   todosContainer: {
     width: "100%",
     flexDirection: "column"
+  },
+  navBar: {
+    width:"100%",
+    display:"flex",
+    justifyContent: "flex-end",
+    alignItems: "flex-end"
   }
 });
 

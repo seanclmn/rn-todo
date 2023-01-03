@@ -8,6 +8,7 @@ export const useTodoStore = create<AppState>((set)=> ({
   createMode: false,  
   setLogIn: (bool)=>set(()=>({loggedIn: bool})),
   setUser: (newUser)=>set(()=>({user: newUser})),
+  setTodos: (loadedTodos)=>set(()=>({todos: loadedTodos})),
   addTodo: (newTodo)=>{
 		set((state)=>({todos: [...state.todos,newTodo]}))
 	},

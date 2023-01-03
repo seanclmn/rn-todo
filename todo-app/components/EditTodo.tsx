@@ -4,8 +4,8 @@ import { useTodoStore } from "../store/Store";
 import { Todo } from "../types/Types";
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid'
-
-
+import { addDoc, doc, setDoc, updateDoc } from "firebase/firestore";
+import { db } from "../Firebase";
 
 interface Inputs {
   todo: string,
@@ -13,9 +13,17 @@ interface Inputs {
 };
 
 export const CreateTodo = () => {
+  const storeState = useTodoStore((state)=>state)
   const createTodo = useTodoStore((state)=>state.addTodo)
   const setCreateMode = useTodoStore((state)=>state.setCreateMode)
   const progress = useRef(new Animated.Value(0.5)).current
+
+  const addTodo = async (newTodo: Todo) => {
+    const docRef = doc(db,`users/${storeState.user?.id}`)
+    const newTodos = [...storeState.todos,newTodo]
+    updateDoc(docRef,{todos: newTodos})
+    storeState.setTodos(newTodos)
+  }
 
   useEffect(()=> {
     Animated.timing(progress, {toValue: 1,useNativeDriver: true}).start()
@@ -75,7 +83,8 @@ export const CreateTodo = () => {
       <Button 
         title="Add Task" 
         onPress={()=>{
-          createTodo(newTodo)
+          addTodo(newTodo)
+          // useCreateTodo(newTodo)
           setCreateMode(false)
           }}
         />

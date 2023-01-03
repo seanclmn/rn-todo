@@ -18,6 +18,7 @@ export interface AppState {
   createMode: boolean
   setLogIn: (bool: boolean)=>void
   setUser: (newUser: User | null)=>void
+  setTodos: (loadedTodos: Todo[])=>void
   addTodo: (newTodo: Todo)=>void
   deleteTodo: (todoToDelete: Todo)=>void
   updateTodo: (todoToUpdate: Todo)=>void
