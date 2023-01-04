@@ -1,25 +1,22 @@
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTodoStore } from './store/Store';
 
 import { Todo } from './components/Todo';
 import { CreateTodo } from './components/EditTodo';
-import { LogIn, SignUp } from './components/Creds';
+import { LogIn, SignUp } from './screens/Creds';
 import { useEffect, useState } from 'react';
 import {auth, db} from './Firebase'
 import { collection, doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
+import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Home } from './screens/Home';
 
 const App = () => {
   const [loading,setLoading]=useState(true)
   const storeState = useTodoStore(state=>state)
 
-  const logOut = () => {
-    signOut(auth).then(() => {
-      // Sign-out successful.
-    }).catch((error) => {
-      // An error happened.
-});
-  }
+  const Stack = createNativeStackNavigator()
 
   useEffect(()=>{
     const user = auth.onAuthStateChanged(async (user)=>{
@@ -50,34 +47,37 @@ const App = () => {
 
   },[])
 
-  if(loading) return <View style={styles.appContainer}><ActivityIndicator size="large" color="#0000ff" /></View>
+  if(loading) return( 
+    <View style={styles.appContainer}>
+      <ActivityIndicator style={{marginVertical: "auto"}} size="large" color="rgb(33, 150, 243)" />
+    </View>
+    )
 
-  if(!storeState.loggedIn) return <LogIn/>
+  if(!storeState.loggedIn) return(
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name={"Login"} component={LogIn}/>
+        <Stack.Screen name={"Signup"} component={SignUp}/>
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
 
   return (
-    <View style={styles.appContainer}>
-      <View style={styles.navBar}>
-        <Button 
-          title={"Log Out"} onPress={logOut}
-          />
-      </View>
-
-      {storeState.createMode ? <CreateTodo/>: <Button title="create" onPress={()=>storeState.setCreateMode(true)}/>}
-      <Text>Your Todos:</Text>
-      <View style={styles.todosContainer}>
-        {storeState.todos.map((todo)=><Todo {...todo} key={todo.id}/>)}
-      </View>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name={"Home"} component={Home} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   appContainer: {
-    marginTop: 50,
     width: "100%",
+    height: "100%",
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   todosContainer: {
     width: "100%",
@@ -87,7 +87,8 @@ const styles = StyleSheet.create({
     width:"100%",
     display:"flex",
     justifyContent: "flex-end",
-    alignItems: "flex-end"
+    alignItems: "flex-end",
+    marginBottom: 20
   }
 });
 

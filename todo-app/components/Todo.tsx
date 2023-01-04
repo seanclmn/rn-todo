@@ -5,12 +5,10 @@ import { useState } from "react"
 import { doc, updateDoc } from "firebase/firestore"
 import { db } from "../Firebase"
 import { useTodoStore } from "../store/Store"
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import Icon from 'react-native-vector-icons/AntDesign';
 
 export const Todo = (todoProps: TodoModel) => {
   const storeState = useTodoStore((state)=>state)
-
   const [completed,setCompleted]=useState(todoProps.completed)
 
   const changeTodoStatus = () => {
@@ -44,7 +42,7 @@ export const Todo = (todoProps: TodoModel) => {
   }
 
   const Styles = StyleSheet.create({
-    todo: {
+    todoTop: {
       height: 50,
       width: "100%",
       display: "flex",
@@ -55,30 +53,47 @@ export const Todo = (todoProps: TodoModel) => {
       backgroundColor: '#fff',
       alignItems: 'center',
       justifyContent: 'space-between',
-			borderStyle: "solid",
-			borderColor: "grey",
-			borderWidth: 1
-  },
+      borderStyle: "solid",
+			borderColor: "#c9c9c9",
+			borderTopWidth: 1,
+      borderBottomWidth: 1
+    },
+    dueDate: {
+      fontSize: 10
+    }
   })
-  // console.log(completed)
+
   return(
-    <View style={Styles.todo}>
-      <CheckBox disabled={false} value={completed} onValueChange={changeTodoStatus}/>
-      <Text 
-        style={completed && {textDecorationLine: 'line-through', textDecorationStyle: 'solid'}}
-        >
-        {todoProps.todo} (Due {todoProps.dueDate})
+    <View style={Styles.todoTop}>
+      <CheckBox 
+        disabled={false} 
+        value={completed} 
+        onValueChange={changeTodoStatus}
+        style={{height: 20,width: 20}}
+        color={"rgb(33, 150, 243)"}
+      />
+
+      <View style={{flexGrow: 1, marginHorizontal: 10}}>
+        <Text 
+          style={completed && {textDecorationLine: 'line-through', textDecorationStyle: 'solid'}}
+          >
+          {todoProps.todo}
         </Text>
-      {/* <Button title={"delete"} onPress={deleteTodo}/> */}
-      {/* <FontAwesomeIcon icon="square-check"/> */}
+
+        <Text 
+          style={Styles.dueDate}
+          >
+          (Due {todoProps.dueDate})
+        </Text>
+      </View>
+
+      
       <Pressable onPress={deleteTodo}>
         <Icon 
           style={{fontSize: 20,color: "#e80909"}}
           name='delete'
         />
       </Pressable>
-
-      {/* <Button title={"update"} onPress={}/> */}
     </View>
   )
 }
