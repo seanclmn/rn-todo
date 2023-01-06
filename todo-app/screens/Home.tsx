@@ -1,57 +1,40 @@
 import { signOut } from 'firebase/auth';
-import {View,ScrollView,Button,Text,StyleSheet} from 'react-native'
+import {View,ScrollView,Text} from 'react-native'
+import {Button} from '../components/Button'
 import { auth } from '../Firebase';
 import { useTodoStore } from '../store/Store';
-
 import { CreateTodo } from '../components/EditTodo'
 import { Todo } from '../components/Todo'
-
-
-const styles = StyleSheet.create({
-  appContainer: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  todosContainer: {
-    width: "100%",
-    flexDirection: "column"
-  },
-  navBar: {
-    width:"100%",
-    display:"flex",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    marginBottom: 20
-  }
-});
+import { appStyles } from '../styles/Styles';
 
 export const Home = () => {
   const storeState = useTodoStore((state)=>state)
-
-
-  const logOut = () => {
-    signOut(auth).then(() => {
-      console.log("Signed in user")
-    }).catch((error) => {
-      console.log("Could not sign in user")
-  });
+  const logOut = async () => {
+		try{
+			await signOut(auth)
+		}catch(error){
+			console.log("Could not sign out user",error)
+		}
   }
 
   return(
-    <View style={styles.appContainer}>
-      <View style={styles.navBar}>
+    <View style={appStyles.appContainer}>
+      <View style={appStyles.navBar}>
         <Button 
-          title={"Log Out"} onPress={logOut}
-          />
+          title={"Log Out"} 
+					onClick={logOut}
+					/>
       </View>
 
-      {storeState.createMode ? <CreateTodo/>: <Button title="create" onPress={()=>storeState.setCreateMode(true)}/>}
-      <Text>Your Todos:</Text>
-      <ScrollView style={styles.todosContainer}>
-        {storeState.todos.map((todo)=><Todo {...todo} key={todo.id}/>)}
+			{storeState.createMode ? <CreateTodo/>: <Button title="new todo" onClick={()=>storeState.setCreateMode(true)}/>}
+			<Text style={{fontSize:17,fontWeight:"400", marginTop: 20}}>Your Todos:</Text>
+      <ScrollView style={appStyles.todosContainer}>
+        {storeState.todos.length>0 ? 
+          storeState.todos.map((todo)=><Todo {...todo} key={todo.id}/>) : 
+          <Text style={appStyles.noTodosMessage}>
+            You currently have no todos. Tap on "new todo" to start adding tasks
+          </Text>
+        }
       </ScrollView>
     </View>
   )

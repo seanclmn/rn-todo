@@ -1,21 +1,17 @@
-import { ActivityIndicator, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useTodoStore } from './store/Store';
-
-import { Todo } from './components/Todo';
-import { CreateTodo } from './components/EditTodo';
 import { LogIn, SignUp } from './screens/Creds';
 import { useEffect, useState } from 'react';
 import {auth, db} from './Firebase'
 import { collection, doc, getDoc } from 'firebase/firestore';
-import { signOut } from 'firebase/auth';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Home } from './screens/Home';
+import { appStyles } from './styles/Styles';
 
 const App = () => {
   const [loading,setLoading]=useState(true)
   const storeState = useTodoStore(state=>state)
-
   const Stack = createNativeStackNavigator()
 
   useEffect(()=>{
@@ -37,10 +33,9 @@ const App = () => {
         }
       }else{
         storeState.setLogIn(false)
+        storeState.setTodos([])
       }
       setLoading(false)
-
-      
     })
 
     return user
@@ -48,8 +43,12 @@ const App = () => {
   },[])
 
   if(loading) return( 
-    <View style={styles.appContainer}>
-      <ActivityIndicator style={{marginVertical: "auto"}} size="large" color="rgb(33, 150, 243)" />
+    <View style={appStyles.appContainer}>
+      <ActivityIndicator 
+        style={{marginTop: "auto",marginBottom:"auto"}} 
+        size="large" 
+        color="rgb(33, 150, 243)" 
+      />
     </View>
     )
 
@@ -70,27 +69,5 @@ const App = () => {
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  appContainer: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  todosContainer: {
-    width: "100%",
-    flexDirection: "column"
-  },
-  navBar: {
-    width:"100%",
-    display:"flex",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    marginBottom: 20
-  }
-});
-
 
 export default App
