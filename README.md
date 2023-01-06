@@ -9,4 +9,4 @@ React Navigation was used for some basic routing, and React Native Elements was 
 #### Instructions
 Once you have cloned this repository, go to the ```todo-app``` directory, and run ```npm install``` to install all the necessary dependencies. You will also need to insert the .env file from me, into the root of the ```todo-app``` directory.
 
-To run the app, run ```npx expo start```. Follow the instructions in your terminal to run the app on an iphone or android simulator. If you want to run it in the browser, make sure to use Node version 16 is recommended - any version higher will fail.
+To run the app, run ```npx expo start```. Follow the instructions in your terminal to run the app on an iphone or android simulator. If you want to run it in the browser, using Node version 16 is recommended - any version higher will fail.
